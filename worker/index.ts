@@ -4,6 +4,7 @@ import handler from "vinext/server/app-router-entry";
 
 interface Env {
   ASSETS: Fetcher;
+  OPEN_EXCHANGE_RATES_APP_ID?: string;
   DB: D1Database;
   IMAGES: {
     input(stream: ReadableStream): {
@@ -28,6 +29,29 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/exchange-rate") {
+      if (!env.OPEN_EXCHANGE_RATES_APP_ID) {
+        return Response.json({ error: "환율 API 설정이 필요합니다." }, { status: 503 });
+      }
+
+      try {
+        const apiUrl = new URL("https://openexchangerates.org/api/latest.json");
+        apiUrl.searchParams.set("app_id", env.OPEN_EXCHANGE_RATES_APP_ID);
+        apiUrl.searchParams.set("symbols", "KRW");
+        const response = await fetch(apiUrl, { headers: { Accept: "application/json" } });
+        if (!response.ok) throw new Error(`Exchange API ${response.status}`);
+        const data = await response.json() as { base?: string; timestamp?: number; rates?: { KRW?: number } };
+        const rate = data.rates?.KRW;
+        if (!rate || !Number.isFinite(rate)) throw new Error("Invalid KRW rate");
+        return Response.json(
+          { base: data.base ?? "USD", quote: "KRW", rate, timestamp: data.timestamp ?? null },
+          { headers: { "Cache-Control": "public, max-age=900, stale-while-revalidate=3600" } },
+        );
+      } catch {
+        return Response.json({ error: "최신 환율을 불러오지 못했습니다." }, { status: 502 });
+      }
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];

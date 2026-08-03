@@ -43,6 +43,19 @@ test("희망 출항일 입력 항목을 노출하지 않는다", async () => {
   assert.doesNotMatch(dashboard, /id="date"/);
 });
 
+test("Open Exchange Rates를 서버 경유로 적용하고 App ID를 노출하지 않는다", async () => {
+  const [dashboard, worker] = await Promise.all([
+    readFile(new URL("../public/dashboard.html", import.meta.url), "utf8"),
+    readFile(new URL("../worker/index.ts", import.meta.url), "utf8"),
+  ]);
+  assert.match(worker, /OPEN_EXCHANGE_RATES_APP_ID/);
+  assert.match(worker, /openexchangerates\.org\/api\/latest\.json/);
+  assert.match(worker, /api\/exchange-rate/);
+  assert.match(dashboard, /fetch\('\/api\/exchange-rate'\)/);
+  assert.match(dashboard, /1 USD =/);
+  assert.doesNotMatch(worker, /app_id\s*[:=]\s*["'][0-9a-f]{32}["']/i);
+});
+
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
   assert.match(dashboard, /실제 3개 선사 · 132개 운임 행/);
