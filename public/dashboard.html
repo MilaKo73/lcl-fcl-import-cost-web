@@ -22,6 +22,7 @@
       <div class="field fcl-only"><label for="container">컨테이너 규격 *</label><select id="container"><option value="20FT">20FT</option><option value="40FT">40FT</option><option value="40HQ">40HQ</option></select></div>
       <div class="field"><label for="quantity">수량 *</label><input id="quantity" type="number" min="1" value="1"></div>
       <div class="field fcl-only"><label for="term">운임 조건</label><select id="term"><option>CC</option><option>PP</option></select></div>
+      <div class="field fcl-only"><label for="terminal">실제 반입 터미널</label><select id="terminal"><option value="auto">자동 · 확인 필요</option><option value="부산신항">부산신항</option><option value="부산북항">부산북항</option><option value="인천신항">인천신항</option><option value="인천항">인천항</option></select></div>
       <div class="field lcl-only hidden"><label for="cbm">화물 부피(CBM)</label><input id="cbm" type="number" min="0.1" step="0.1" value="4.5"></div>
       <div class="field lcl-only hidden"><label for="weight">화물 중량(kg)</label><input id="weight" type="number" min="1" value="2800"></div>
       <div class="field"><label for="hs">HS CODE</label><input id="hs" value="847130" maxlength="10"></div>
@@ -30,7 +31,7 @@
       <button class="action" id="calculate" type="button">DB 조회·추천</button>
     </div>
     <div class="db-strip">
-      <div class="db"><strong>FCL 운임 8월 선사3.xlsx</strong><span class="sub">가상 8건 로드 · SC NO 완전 제외 · 실제 Excel 교체 예정</span></div>
+      <div class="db"><strong>FCL 운임 8월 선사3.xlsx</strong><span class="sub">실제 3개 선사 · 132개 운임 행 · 계약번호 컬럼 완전 제외</span></div>
       <div class="db"><strong>202608 안전운임제.xlsx</strong><span class="sub">실제 14개 항만 시트 · 48,720개 행정동 요율 · 안전위탁운임만 사용</span></div>
     </div>
   </section>
@@ -48,33 +49,38 @@
 
   <section class="card fcl-result"><div class="section-head"><h3>대안 경로 비교</h3><span class="sub">비용 → 국내운송 → 직항 → 리스크 순 추천</span></div><div class="table-box"><table><thead><tr><th>순위</th><th>선사</th><th>POL</th><th>POD</th><th>반입 터미널</th><th class="num">해상운임</th><th class="num">국내운송료</th><th>직항/환적</th><th>추천</th><th>유의사항</th></tr></thead><tbody id="alternatives"></tbody></table></div></section>
 
-  <section class="card"><div class="section-head"><h3>DB 매칭 및 예외 확인</h3><span class="badge warn" id="risk-count">확인 1건</span></div><div class="table-box"><table><thead><tr><th>검증 항목</th><th>상태</th><th>적용 내용</th></tr></thead><tbody id="checks"></tbody></table></div><div class="source">계약번호(SC NO)는 조회·계산·화면·비교 기준에서 모두 제외됩니다. LSS/PSS 및 비고상 별도 비용은 자동 합산하지 않습니다.</div></section>
+  <section class="card"><div class="section-head"><h3>DB 매칭 및 예외 확인</h3><span class="badge warn" id="risk-count">확인 1건</span></div><div class="table-box"><table><thead><tr><th>검증 항목</th><th>상태</th><th>적용 내용</th></tr></thead><tbody id="checks"></tbody></table></div><div class="source">계약번호 컬럼은 데이터 변환 단계에서 제거되며 화면·계산·비교에 사용하지 않습니다. LSS/PSS 및 비고상 별도 비용은 자동 합산하지 않습니다.</div></section>
 </main>
 <script>
 const freightDB=[
- {line:'SITC',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Busan',podCode:'KRPUS',terminal:'부산신항',f20:1180,f40:1960,lss:85,route:'직항',days:4,note:'LSS 별도'},
- {line:'KMTC',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Incheon',podCode:'KRINC',terminal:'터미널 확인 필요',f20:1230,f40:2020,lss:0,route:'직항',days:3,note:'CIC 포함'},
- {line:'COSCO',term:'PP',pol:'Shanghai',polCode:'CNSHA',pod:'Busan',podCode:'KRPUS',terminal:'부산북항',f20:1160,f40:1990,lss:110,route:'환적',days:7,note:'닝보 환적·PSS 별도'},
- {line:'ONE',term:'CC',pol:'Shenzhen',polCode:'CNSZX',pod:'Busan',podCode:'KRPUS',terminal:'부산신항',f20:1290,f40:2140,lss:95,route:'직항',days:5,note:'LSS 별도'},
- {line:'HMM',term:'CC',pol:'Rotterdam',polCode:'NLRTM',pod:'Busan',podCode:'KRPUS',terminal:'부산신항',f20:2480,f40:3920,lss:160,route:'직항',days:31,note:'PSS 별도'},
- {line:'MSC',term:'PP',pol:'Rotterdam',polCode:'NLRTM',pod:'Incheon',podCode:'KRINC',terminal:'인천신항',f20:2390,f40:3810,lss:190,route:'환적',days:38,note:'Singapore 환적'},
- {line:'Hapag-Lloyd',term:'CC',pol:'Hamburg',polCode:'DEHAM',pod:'Busan',podCode:'KRPUS',terminal:'부산신항',f20:2550,f40:4050,lss:180,route:'직항',days:32,note:'LSS 별도'},
- {line:'Maersk',term:'CC',pol:'Hamburg',polCode:'DEHAM',pod:'Incheon',podCode:'KRINC',terminal:'인천신항',f20:2590,f40:3980,lss:170,route:'환적',days:37,note:'Tanjung Pelepas 환적'}
+ {line:'CK',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Busan',podCode:'KRPUS',f20:150,f40:300,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'CK',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Incheon',podCode:'KRINC',f20:460,f40:920,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 별도'},
+ {line:'KMTC',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Incheon',podCode:'KRINC',f20:430,f40:860,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 별도'},
+ {line:'KMTC',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Busan',podCode:'KRPUS',f20:200,f40:400,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'NAMSUNG',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Incheon',podCode:'KRINC',f20:460,f40:920,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 별도'},
+ {line:'NAMSUNG',term:'CC',pol:'Shanghai',polCode:'CNSHA',pod:'Busan',podCode:'KRPUS',f20:200,f40:400,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'CK',term:'CC',pol:'Shekou',polCode:'CNSHK',pod:'Busan',podCode:'KRPUS',f20:150,f40:300,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'CK',term:'CC',pol:'Shekou',polCode:'CNSHK',pod:'Incheon',podCode:'KRINC',f20:300,f40:600,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'KMTC',term:'CC',pol:'Shekou',polCode:'CNSHK',pod:'Incheon',podCode:'KRINC',f20:250,f40:500,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'KMTC',term:'CC',pol:'Shekou',polCode:'CNSHK',pod:'Busan',podCode:'KRPUS',f20:180,f40:360,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 CAF/BAF/CIC 포함'},
+ {line:'NAMSUNG',term:'CC',pol:'Shekou',polCode:'CNSHK',pod:'Incheon',podCode:'KRINC',f20:250,f40:500,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 EBS/ECRS/CIC 포함'},
+ {line:'NAMSUNG',term:'CC',pol:'Shekou',polCode:'CNSHK',pod:'Busan',podCode:'KRPUS',f20:200,f40:400,lss:200,pss:0,route:'확인 필요',note:'선적지 LSS 별도 · 도착지 EBS/ECRS/CIC 포함'}
 ];
 const inlandDB={
- seoul:{label:'서울특별시 강남구 삼성동',short:'서울 강남구 삼성동',match:'삼성1동으로 행정동 매칭',rates:{'부산신항':{km:392,r20:930600,r40:1057600},'부산북항':{km:397,r20:937800,r40:1066500},'인천신항':{km:55,r20:336800,r40:378000},'터미널 확인 필요':null}},
- icheon:{label:'경기도 이천시 마장면',short:'경기 이천시 마장면',match:'행정동 매칭 완료',rates:{'부산신항':{km:341,r20:849500,r40:954900},'부산북항':{km:346,r20:856900,r40:964200},'인천신항':{km:79,r20:399100,r40:449400},'터미널 확인 필요':null}},
- daejeon:{label:'대전광역시 대덕구 문평동',short:'대전 대덕구 문평동',match:'목상동으로 행정동 매칭',rates:{'부산신항':{km:268,r20:708300,r40:808700},'부산북항':{km:273,r20:740400,r40:820800},'인천신항':{km:166,r20:610300,r40:698000},'터미널 확인 필요':null}},
- daegu:{label:'대구광역시 달서구 월암동',short:'대구 달서구 월암동',match:'월성2동으로 행정동 매칭',rates:{'부산신항':{km:127,r20:436300,r40:495100},'부산북항':{km:123,r20:428500,r40:486000},'인천신항':{km:300,r20:945100,r40:1052200},'터미널 확인 필요':null}},
- busan:{label:'부산광역시 강서구 녹산동',short:'부산 강서구 녹산동',match:'행정동 매칭 완료',rates:{'부산신항':{km:15,r20:151900,r40:175400},'부산북항':{km:31,r20:205400,r40:230300},'인천신항':{km:406,r20:1140500,r40:1299400},'터미널 확인 필요':null}}
+ seoul:{label:'서울특별시 강남구 삼성동',short:'서울 강남구 삼성동',match:'삼성1동으로 행정동 매칭',rates:{'부산신항':{km:392,r20:930600,r40:1057600},'부산북항':{km:397,r20:937800,r40:1066500},'인천신항':{km:55,r20:336800,r40:378000},'인천항':{km:53,r20:331400,r40:371900},'터미널 확인 필요':null}},
+ icheon:{label:'경기도 이천시 마장면',short:'경기 이천시 마장면',match:'행정동 매칭 완료',rates:{'부산신항':{km:341,r20:849500,r40:954900},'부산북항':{km:346,r20:856900,r40:964200},'인천신항':{km:79,r20:399100,r40:449400},'인천항':{km:84,r20:411600,r40:464000},'터미널 확인 필요':null}},
+ daejeon:{label:'대전광역시 대덕구 문평동',short:'대전 대덕구 문평동',match:'목상동으로 행정동 매칭',rates:{'부산신항':{km:268,r20:708300,r40:808700},'부산북항':{km:273,r20:740400,r40:820800},'인천신항':{km:166,r20:610300,r40:698000},'인천항':{km:172,r20:623300,r40:713600},'터미널 확인 필요':null}},
+ daegu:{label:'대구광역시 달서구 월암동',short:'대구 달서구 월암동',match:'월성2동으로 행정동 매칭',rates:{'부산신항':{km:127,r20:436300,r40:495100},'부산북항':{km:123,r20:428500,r40:486000},'인천신항':{km:300,r20:945100,r40:1052200},'인천항':{km:305,r20:954300,r40:1063500},'터미널 확인 필요':null}},
+ busan:{label:'부산광역시 강서구 녹산동',short:'부산 강서구 녹산동',match:'행정동 매칭 완료',rates:{'부산신항':{km:15,r20:151900,r40:175400},'부산북항':{km:31,r20:205400,r40:230300},'인천신항':{km:406,r20:1140500,r40:1299400},'인천항':{km:411,r20:1149000,r40:1310300},'터미널 확인 필요':null}}
 };
 const tariffs={'847130':['휴대용 컴퓨터',0,10],'851713':['스마트폰',0,10],'620342':['남성 면바지',13,10],'640399':['가죽 신발',13,10],'950300':['완구류',8,10],'940360':['목제 가구',8,10]};
-const originMap=[{keys:['shanghai','pudong','상하이'],city:'상하이',pol:'Shanghai',code:'CNSHA'},{keys:['shenzhen','bao','선전'],city:'선전',pol:'Shenzhen',code:'CNSZX'},{keys:['rotterdam','waalhaven','로테르담'],city:'로테르담',pol:'Rotterdam',code:'NLRTM'},{keys:['hamburg','billbrook','함부르크'],city:'함부르크',pol:'Hamburg',code:'DEHAM'}];
+const originMap=[{keys:['shanghai','pudong','상하이'],city:'상하이',pol:'Shanghai',code:'CNSHA'},{keys:['shenzhen','bao','선전'],city:'선전',pol:'Shekou',code:'CNSHK'},{keys:['rotterdam','waalhaven','로테르담'],city:'로테르담',pol:'Rotterdam',code:'NLRTM'},{keys:['hamburg','billbrook','함부르크'],city:'함부르크',pol:'Hamburg',code:'DEHAM'}];
 const $=id=>document.getElementById(id), usd=n=>'USD '+n.toLocaleString('en-US'), krw=n=>'KRW '+n.toLocaleString('ko-KR');
 function mode(){return document.querySelector('input[name=mode]:checked').value}
 function origin(){const v=$('origin').value.toLowerCase();return originMap.find(o=>o.keys.some(k=>v.includes(k)))||{city:'출발지 확인 필요',pol:null,code:'-'}}
 function inland(row,dest,size){const rate=dest.rates[row.terminal];return rate?(size==='20FT'?rate.r20:rate.r40):0}
 function inlandKm(row,dest){return dest.rates[row.terminal]?.km||0}
+function resolveTerminal(podCode){const selected=$('terminal').value;if(selected==='auto')return '터미널 확인 필요';const valid=podCode==='KRPUS'?['부산신항','부산북항']:podCode==='KRINC'?['인천신항','인천항']:[];return valid.includes(selected)?selected:'터미널 확인 필요'}
 function render(){
  const isFcl=mode()==='FCL';document.querySelectorAll('.fcl-only,.fcl-result').forEach(x=>x.classList.toggle('hidden',!isFcl));document.querySelectorAll('.lcl-only').forEach(x=>x.classList.toggle('hidden',isFcl));
  const org=origin(),dest=inlandDB[$('destination').value],qty=Math.max(1,+$('quantity').value||1),size=$('container').value,term=$('term').value,hs=$('hs').value.replace(/\D/g,'').slice(0,6),tax=tariffs[hs];
@@ -86,15 +92,15 @@ function render(){
    $('cost-body').innerHTML=[['해상운임',`${org.code} → KRPUS`,'LCL',usd(118),rt.toFixed(2),usd(ocean),'USD','포함','R/T 기준'],['도착지 비용','부산 CFS','LCL',usd(210),1,usd(210),'USD','포함','가상 CFS 비용'],['국내 배송','CFS → 최종 도착지','LCL',usd(Math.round(rt*34)),1,usd(Math.round(rt*34)),'USD','포함','가상 배송료']].map(r=>`<tr>${r.map((v,i)=>`<td class="${[3,4,5].includes(i)?'num':''}">${v}</td>`).join('')}</tr>`).join('');
    $('checks').innerHTML='<tr><td>FCL DB 적용</td><td class="risk">미적용</td><td>LCL 선택 시 기존 LCL 비용 구성만 표시</td></tr><tr><td>HS CODE</td><td class="'+(tax?'ok':'risk')+'">'+(tax?'매칭':'확인 필요')+'</td><td>'+(tax?tax[0]:'등록되지 않은 코드')+'</td></tr>';$('risk-count').textContent=tax?'확인 1건':'확인 2건';return;
  }
- let rows=freightDB.filter(r=>r.pol===org.pol&&r.term===term).map(r=>({...r,ocean:size==='20FT'?r.f20:r.f40,inland:inland(r,dest,size)}));
+ let rows=freightDB.filter(r=>r.pol===org.pol&&r.term===term).map(r=>{const row={...r,terminal:resolveTerminal(r.podCode)};return {...row,ocean:size==='20FT'?r.f20:r.f40,inland:inland(row,dest,size)}});
  rows.sort((a,b)=>(a.ocean-b.ocean)||((a.inland||9999999)-(b.inland||9999999))||(a.route==='직항'?-1:1));const best=rows[0];
  if(!best){$('kpi-route').textContent='해상운임 DB 매칭 불가';$('kpi-ocean').textContent='USD -';$('kpi-inland').textContent='KRW -';$('cost-body').innerHTML='<tr><td colspan="9" class="empty">조건에 맞는 POL/POD 운임이 없습니다.</td></tr>';$('alternatives').innerHTML='<tr><td colspan="10" class="empty">대안 경로 없음</td></tr>';$('checks').innerHTML='<tr><td>해상운임 DB</td><td class="risk">매칭 불가</td><td>출발지 또는 CC/PP 조건 확인 필요</td></tr>';$('risk-count').textContent='확인 1건';return}
  $('kpi-route').textContent=`${best.line} · ${best.polCode} → ${best.podCode}`;$('kpi-service').textContent=`${best.route} · ${best.terminal}`;$('kpi-ocean').textContent=usd(best.ocean*qty);$('kpi-inland').textContent=best.inland?krw(best.inland*qty):'터미널 확인 필요';
  $('r-origin').textContent=org.city+' 출발지';$('r-origin-sub').textContent=$('incoterm').value==='EXW'?'EXW 픽업지 분석':'매도인 구간';$('r-pol').textContent=`${best.pol} · ${best.polCode}`;$('r-pod').textContent=`${best.pod} · ${best.podCode}`;$('r-terminal').textContent=best.terminal+' 적용';$('r-dest').textContent=dest.short;$('r-match').textContent=`${dest.match} · ${inlandKm(best,dest)}km`;$('recommend-reason').textContent=`추천 근거: DB 조회 가능 · ${best.line} ${best.route} · 해상운임 ${usd(best.ocean)} · 국내운송 ${best.inland?krw(best.inland):'터미널 확인 필요'} · 실제 안전운임제 매칭`;
- const costRows=[['해상운임',`${best.polCode} → ${best.podCode}`,size,usd(best.ocean),qty,usd(best.ocean*qty),'USD','포함','TOTAL 기준'],['선적지 별도비용',best.polCode,size,usd(best.lss),qty,usd(best.lss*qty),'USD','별도',best.note],['국내 컨테이너 운송',`${best.terminal} → ${dest.short}`,size,best.inland?krw(best.inland):'-',qty,best.inland?krw(best.inland*qty):'-','KRW','포함',best.inland?`안전위탁운임 · ${inlandKm(best,dest)}km`:'터미널 확인 필요'],['해상운임 합계',`${best.polCode} → ${best.podCode}`,size,'-',qty,usd(best.ocean*qty),'USD','-','별도 비용 제외'],['국내운송료 합계','국내 구간',size,'-',qty,best.inland?krw(best.inland*qty):'-','KRW','-','202608 안전운임제']];
+ const extra=(best.lss||0)+(best.pss||0);const costRows=[['해상운임',`${best.polCode} → ${best.podCode}`,size,usd(best.ocean),qty,usd(best.ocean*qty),'USD','포함','TOTAL 기준'],['선적지 별도비용',best.polCode,size,usd(extra),qty,usd(extra*qty),'USD','별도',best.note],['국내 컨테이너 운송',`${best.terminal} → ${dest.short}`,size,best.inland?krw(best.inland):'-',qty,best.inland?krw(best.inland*qty):'-','KRW','포함',best.inland?`안전위탁운임 · ${inlandKm(best,dest)}km`:'터미널 확인 필요'],['해상운임 합계',`${best.polCode} → ${best.podCode}`,size,'-',qty,usd(best.ocean*qty),'USD','-','별도 비용 제외'],['국내운송료 합계','국내 구간',size,'-',qty,best.inland?krw(best.inland*qty):'-','KRW','-','202608 안전운임제']];
  $('cost-body').innerHTML=costRows.map((r,ri)=>`<tr class="${ri>2?'total-row':''}">${r.map((v,i)=>`<td class="${[3,4,5].includes(i)?'num':''}">${v}</td>`).join('')}</tr>`).join('');$('hq-notice').classList.toggle('hidden',size!=='40HQ');
  $('alternatives').innerHTML=rows.slice(0,3).map((r,i)=>`<tr class="${i===0?'recommended':''}"><td>${i+1}</td><td>${r.line}</td><td>${r.polCode}</td><td>${r.podCode}</td><td>${r.terminal}</td><td class="num">${usd(r.ocean)}</td><td class="num">${r.inland?krw(r.inland):'-'}</td><td>${r.route}</td><td class="${i===0?'ok':''}">${i===0?'추천':''}</td><td>${r.note}</td></tr>`).join('');
- const issues=[];if(best.terminal.includes('확인'))issues.push('실제 반입 터미널 확인 필요');if(best.lss)issues.push('LSS/PSS 별도 비용 미포함');if(size==='40HQ')issues.push('40FT 안전위탁운임 대체 적용');
+ const issues=[];if(best.terminal.includes('확인'))issues.push('실제 반입 터미널 확인 필요');if(best.route.includes('확인'))issues.push('직항·환적 여부 확인 필요');if(best.lss||best.pss)issues.push('LSS/PSS 별도 비용 미포함');if(size==='40HQ')issues.push('40FT 안전위탁운임 대체 적용');
  $('checks').innerHTML=`<tr><td>해상운임 DB</td><td class="ok">매칭</td><td>${best.line} · ${best.polCode}/${best.podCode} · ${term}</td></tr><tr><td>국내 안전위탁운임</td><td class="${best.inland?'ok':'risk'}">${best.inland?'매칭':'확인 필요'}</td><td>${best.terminal} · ${dest.label}</td></tr><tr><td>별도 비용·리스크</td><td class="${issues.length?'risk':'ok'}">${issues.length?'확인 필요':'정상'}</td><td>${issues.join(' · ')||'추가 확인사항 없음'}</td></tr><tr><td>HS CODE</td><td class="${tax?'ok':'risk'}">${tax?'매칭':'확인 필요'}</td><td>${tax?`${tax[0]} · 관세 ${tax[1]}% · 부가세 ${tax[2]}%`:'관세청/관세사 확인 필요'}</td></tr>`;$('risk-count').textContent=`확인 ${issues.length+(tax?0:1)}건`;
 }
 document.querySelectorAll('input,select').forEach(x=>x.addEventListener('change',render));$('origin').addEventListener('input',render);$('hs').addEventListener('input',render);$('calculate').addEventListener('click',render);render();
