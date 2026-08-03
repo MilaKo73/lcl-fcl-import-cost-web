@@ -87,7 +87,7 @@ test("통합견적과 해외 파트너 관리 메뉴를 제공하고 관할 파�
   assert.match(dashboard, /Shenzhen Gateway Partners/);
   assert.match(dashboard, /function partnerForOrigin/);
   assert.match(dashboard, /추천 파트너:/);
-  assert.match(dashboard, /Excel DB 업로드 예정/);
+  assert.match(dashboard, /관세청 항구 DB 연결 완료/);
 });
 
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
