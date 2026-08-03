@@ -82,9 +82,9 @@ test("통합견적과 해외 파트너 관리 메뉴를 제공하고 관할 파�
   assert.match(dashboard, /해상비용 통합견적 조건/);
   assert.match(dashboard, /해외 파트너 정보 관리/);
   assert.match(dashboard, /id="partner-view"/);
-  assert.match(dashboard, /const partnerDB=/);
-  assert.match(dashboard, /Shanghai Blue Logistics/);
-  assert.match(dashboard, /Shenzhen Gateway Partners/);
+  assert.match(dashboard, /let partnerDB=\[\]/);
+  assert.match(dashboard, /partners-202608\.json/);
+  assert.match(dashboard, /function loadPartnerDB/);
   assert.match(dashboard, /function partnerForOrigin/);
   assert.match(dashboard, /추천 파트너:/);
   assert.match(dashboard, /관세청 항구 DB 연결 완료/);
