@@ -67,6 +67,16 @@ test("대시보드 전반에 블루 컬러 팔레트를 적용한다", async () 
   assert.match(globals, /--accent-soft: #e8f0ff/);
 });
 
+test("인코텀즈 옆에 자동 POL과 선택 POD를 표시한다", async () => {
+  const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
+  const incotermIndex = dashboard.indexOf('id="incoterm"');
+  const polIndex = dashboard.indexOf('id="pol-display"');
+  const podIndex = dashboard.indexOf('id="pod"');
+  assert.ok(incotermIndex < polIndex && polIndex < podIndex);
+  assert.match(dashboard, /id="pol-display"[^>]*readonly/);
+  assert.match(dashboard, /\$\('pol-display'\)\.value=org\.pol/);
+});
+
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
   assert.match(dashboard, /실제 3개 선사 · 132개 운임 행/);
