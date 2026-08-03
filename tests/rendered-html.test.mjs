@@ -19,3 +19,11 @@ test("대시보드가 기존 기능과 신규 DB 규칙을 포함한다", async 
   }
   assert.doesNotMatch(dashboard, /CBM별 예상 총 물류비용/);
 });
+
+test("실제 202608 안전위탁운임 대표값을 반영한다", async () => {
+  const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
+  assert.match(dashboard, /실제 14개 항만 시트/);
+  assert.match(dashboard, /'부산신항':\{km:392,r20:930600,r40:1057600\}/);
+  assert.match(dashboard, /'인천신항':\{km:55,r20:336800,r40:378000\}/);
+  assert.match(dashboard, /202608 안전운임제/);
+});
