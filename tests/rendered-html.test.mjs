@@ -56,6 +56,17 @@ test("Open Exchange Rates를 서버 경유로 적용하고 App ID를 노출하�
   assert.doesNotMatch(worker, /app_id\s*[:=]\s*["'][0-9a-f]{32}["']/i);
 });
 
+test("대시보드 전반에 블루 컬러 팔레트를 적용한다", async () => {
+  const [dashboard, globals] = await Promise.all([
+    readFile(new URL("../public/dashboard.html", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  assert.match(dashboard, /--teal:#2563eb/);
+  assert.match(dashboard, /--teal2:#e8f0ff/);
+  assert.match(globals, /--accent: #2563eb/);
+  assert.match(globals, /--accent-soft: #e8f0ff/);
+});
+
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
   assert.match(dashboard, /실제 3개 선사 · 132개 운임 행/);
