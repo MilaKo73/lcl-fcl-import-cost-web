@@ -37,6 +37,12 @@ test("운임 조건 없이 POL은 자동 추천하고 POD는 사용자가 선택
   assert.match(dashboard, /r\.pol===org\.pol&&r\.podCode===podCode/);
 });
 
+test("희망 출항일 입력 항목을 노출하지 않는다", async () => {
+  const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
+  assert.doesNotMatch(dashboard, /희망 출항일/);
+  assert.doesNotMatch(dashboard, /id="date"/);
+});
+
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
   assert.match(dashboard, /실제 3개 선사 · 132개 운임 행/);
