@@ -14,10 +14,17 @@ test("웹 셸이 해상 수입물류 대시보드를 노출한다", async () => 
 
 test("대시보드가 기존 기능과 신규 DB 규칙을 포함한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
-  for (const term of ["LCL", "FCL", "인코텀즈", "HS CODE", "안전위탁운임", "FCL 운임 8월 선사3.xlsx", "202608 안전운임제.xlsx", "터미널 확인 필요", "40HQ"]) {
+  for (const term of ["LCL", "FCL", "인코텀즈", "HS CODE", "안전위탁운임", "FCL 운임 8월 선사3.xlsx", "202608 안전운임제.xlsx", "터미널 확인 필요", "40GP/HQ"]) {
     assert.match(dashboard, new RegExp(term));
   }
   assert.doesNotMatch(dashboard, /CBM별 예상 총 물류비용/);
+});
+
+test("40GP와 40HQ를 하나의 규격으로 취급한다", async () => {
+  const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
+  assert.match(dashboard, /<option value="40GP\/HQ">40GP\/HQ<\/option>/);
+  assert.match(dashboard, /40GP\/HQ는 동일 규격으로 취급/);
+  assert.doesNotMatch(dashboard, /<option value="40FT">40FT<\/option><option value="40HQ">/);
 });
 
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
