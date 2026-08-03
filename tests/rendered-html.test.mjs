@@ -27,6 +27,16 @@ test("40GP와 40HQ를 하나의 규격으로 취급한다", async () => {
   assert.doesNotMatch(dashboard, /<option value="40FT">40FT<\/option><option value="40HQ">/);
 });
 
+test("운임 조건 없이 POL은 자동 추천하고 POD는 사용자가 선택한다", async () => {
+  const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
+  assert.doesNotMatch(dashboard, /<label for="term">운임 조건<\/label>/);
+  assert.match(dashboard, /<label for="pod">국내 도착항\(POD\) \*<\/label>/);
+  assert.match(dashboard, /부산항 · KRPUS/);
+  assert.match(dashboard, /인천항 · KRINC/);
+  assert.match(dashboard, /출발지 인접 POL 자동 추천/);
+  assert.match(dashboard, /r\.pol===org\.pol&&r\.podCode===podCode/);
+});
+
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
   assert.match(dashboard, /실제 3개 선사 · 132개 운임 행/);
