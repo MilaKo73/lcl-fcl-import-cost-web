@@ -77,6 +77,19 @@ test("인코텀즈 옆에 자동 POL과 선택 POD를 표시한다", async () =>
   assert.match(dashboard, /\$\('pol-display'\)\.value=org\.pol/);
 });
 
+test("통합견적과 해외 파트너 관리 메뉴를 제공하고 관할 파트너를 추천한다", async () => {
+  const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
+  assert.match(dashboard, /해상비용 통합견적 조건/);
+  assert.match(dashboard, /해외 파트너 정보 관리/);
+  assert.match(dashboard, /id="partner-view"/);
+  assert.match(dashboard, /const partnerDB=/);
+  assert.match(dashboard, /Shanghai Blue Logistics/);
+  assert.match(dashboard, /Shenzhen Gateway Partners/);
+  assert.match(dashboard, /function partnerForOrigin/);
+  assert.match(dashboard, /추천 파트너:/);
+  assert.match(dashboard, /Excel DB 업로드 예정/);
+});
+
 test("실제 3개 선사 운임과 계약번호 제외 규칙을 반영한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
   assert.match(dashboard, /실제 3개 선사 · 132개 운임 행/);
