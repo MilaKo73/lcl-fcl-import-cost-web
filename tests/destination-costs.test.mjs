@@ -17,8 +17,12 @@ test("Busan and Incheon destination costs are selected by POD", async () => {
   assert.match(dashboard, /function destinationRows/);
   assert.match(dashboard, /도착지 비용 KRW 합계/);
   assert.match(dashboard, /도착지 부대비용 \+ 국내 컨테이너 운송료/);
+  assert.match(dashboard, /\['최종 물류비','전체 구간'/);
+  assert.match(dashboard, /usdCostTotal\*exchangeRate\+krwDestinationTotal/);
+  assert.match(dashboard, /해상운임 \+ 선적지 별도비용의 KRW 환산액 \+ 도착지 비용 전체/);
   assert.doesNotMatch(dashboard, /id="kpi-inland"/);
   assert.doesNotMatch(dashboard, /\['국내운송료 합계'/);
   assert.ok(dashboard.indexOf("<h3>비용 테이블</h3>") < dashboard.indexOf("<h3>추천 경로 요약</h3>"));
+  assert.ok(dashboard.indexOf("<h3>비용 테이블</h3>") < dashboard.indexOf("출발지 관할 파트너 추천"));
   assert.match(dashboard, /W\/M\(RT\) 기준/);
 });
