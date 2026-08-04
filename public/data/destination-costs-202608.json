@@ -1,0 +1,12 @@
+{
+  "source":"KRW 도착지 비용 2.xlsx",
+  "sheet":"부대비용",
+  "asOf":"2026-08",
+  "currency":"KRW",
+  "line":"023771",
+  "ports":{
+    "KRPUS":{"LCL":{"CFS":8000,"CCF":2500,"THC":9000,"WFG":356,"DOC":50000,"DRC":10500},"20FT":{"CCF":35000,"THC":150000,"WFG":4429,"DOC":40000,"PFC":145,"PSM":259},"40GP/HQ":{"CCF":50000,"THC":210000,"WFG":8858,"DOC":40000,"PFS":290,"PSM":518}},
+    "KRINC":{"LCL":{"CFS":8000,"CCF":2500,"THC":9000,"WFG":356,"DOC":50000,"DRC":10500},"20FT":{"CCF":35000,"THC":150000,"WFG":4200,"DOC":40000,"PFC":145,"PSM":259},"40GP/HQ":{"CCF":50000,"THC":210000,"WFG":8400,"DOC":40000,"PFS":290,"PSM":518}}
+  },
+  "assumptions":{"LCL":"CFS·CCF·THC·WFG는 W/M(RT), DOC·DRC는 선적 건당 적용","FCL":"각 항목은 컨테이너 대당 적용"}
+}

@@ -110,8 +110,8 @@ test("실제 202608 안전위탁운임 대표값을 반영한다", async () => {
 
 test("LCL은 DB 부재로 모든 운송료를 별도 확인 처리한다", async () => {
   const dashboard = await readFile(new URL("../public/dashboard.html", import.meta.url), "utf8");
-  assert.match(dashboard, /LCL 운임 DB가 등록되지 않아/);
-  assert.match(dashboard, /LCL 운송료 별도 확인/);
-  assert.match(dashboard, /LCL 운임 DB 없음/);
+  assert.match(dashboard, /LCL 해상운임과 국내 운송료는 별도 확인/);
+  assert.match(dashboard, /LCL 국내 운송료 별도 확인/);
+  assert.match(dashboard, /LCL 해상운임 DB 없음/);
   assert.doesNotMatch(dashboard, /rt\*118|가상 CFS 비용/);
 });
