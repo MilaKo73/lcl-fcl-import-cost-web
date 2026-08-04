@@ -12,7 +12,7 @@ test("customs worldwide port database is connected", async () => {
   assert.equal(portData.countryCount, 248);
   assert.equal(portData.ports.length, 27491);
   assert.ok(portData.ports.some((port) => port.code === "CNSHA"));
-  assert.match(dashboard, /port-country-filter/);
+  assert.doesNotMatch(dashboard, /port-country-filter/);
   assert.match(dashboard, /customs-port-codes-202608\.json/);
   assert.match(dashboard, /loadPortCatalog/);
   assert.match(dashboard, /관세청 항구 DB 연결 완료/);
