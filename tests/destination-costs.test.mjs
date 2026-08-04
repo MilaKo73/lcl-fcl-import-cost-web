@@ -15,6 +15,10 @@ test("Busan and Incheon destination costs are selected by POD", async () => {
   assert.equal(data.ports.KRPUS.LCL.CFS, 8000);
   assert.match(dashboard, /destination-costs-202608\.json/);
   assert.match(dashboard, /function destinationRows/);
-  assert.match(dashboard, /도착지 비용 합계/);
+  assert.match(dashboard, /도착지 비용 KRW 합계/);
+  assert.match(dashboard, /도착지 부대비용 \+ 국내 컨테이너 운송료/);
+  assert.doesNotMatch(dashboard, /id="kpi-inland"/);
+  assert.doesNotMatch(dashboard, /\['국내운송료 합계'/);
+  assert.ok(dashboard.indexOf("<h3>비용 테이블</h3>") < dashboard.indexOf("<h3>추천 경로 요약</h3>"));
   assert.match(dashboard, /W\/M\(RT\) 기준/);
 });
