@@ -25,4 +25,9 @@ test("Busan and Incheon destination costs are selected by POD", async () => {
   assert.ok(dashboard.indexOf("<h3>비용 테이블</h3>") < dashboard.indexOf("<h3>추천 경로 요약</h3>"));
   assert.ok(dashboard.indexOf("<h3>비용 테이블</h3>") < dashboard.indexOf("출발지 관할 파트너 추천"));
   assert.match(dashboard, /W\/M\(RT\) 기준/);
+  assert.match(dashboard, /<th>단위<\/th>/);
+  assert.doesNotMatch(dashboard, /<th>컨테이너<\/th>/);
+  assert.match(dashboard, /key==='DOC'\?'B\/L'/);
+  assert.match(dashboard, /key==='DOC'\?1/);
+  assert.match(dashboard, /Documentation Fee는 B\/L당 적용/);
 });
